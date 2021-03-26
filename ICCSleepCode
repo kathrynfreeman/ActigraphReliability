@@ -1,0 +1,729 @@
+---
+title: "Actigraph Reliability Comparison"
+output: html_notebook
+---
+
+## Coefficient of Agreement: Intraclass Corrolation Coefficient
+
+* Interpreting ICC
+  + Values less than 0.5 = poor reliability 
+  + Values between 0.5 and 0.75 = moderate reliability
+  + Values between 0.75 and 0.9 = good reliability
+  + Values greater than 0.9 = excellent reliability
+
+A Guideline of Selecting and Reporting Intraclass Correlation Coefficients for Reliability Research, Koo 2016 
+
+* ICC type
+  + ICC(1) Each subject is assessed by a different set of randomly selected raters, and the
+  reliability is calculated from a single measurement. Uncommonly used in clinical
+  reliability studies.
+  + ICC(1,k) As above, but reliability is calculated by taking an average of the k raters’
+  measurements.
+  + ICC(2) Each subject is measured by each rater, and raters are considered representative
+  of a larger population of similar raters. Reliability calculated from a single
+  measurement.
+  + ICC(2,k) As above, but reliability is calculated by taking an average of the k raters’
+  measurements.
+  + ICC(3) Each subject is assessed by each rater, but the raters are the only raters of
+  interest. Reliability calculated from a single measurement.
+  + ICC(3,k) As above, but reliability is calculated by taking an average of the k raters’
+  measurements.
+    + Please note that subjects in this case are nights of sleep and raters are the two actigraphs
+  
+Model ICC(2) appears most applicable to the sleep data set
+
+## GENEActiv data {.tabset}
+
+### Load Data
+```{r}
+#Set current working directory
+setwd("~/Desktop/sleepdata")
+
+#Import data for total time in bed
+library(readr)
+GSLEEP <- read_csv("GSLEEP.csv")
+
+#View(GSLEEP)
+GSLEEP
+```
+### Time in Bed (dur)
+
+```{r}
+#Select Columns of Data Table
+library(dplyr)
+dur <- select(GSLEEP, durg1, durg2)
+durdiary <- select(GSLEEP, durg1, durg2, durd)
+
+#Intraclass Correlation Coefficient
+library(psych)
+ICC(dur, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(durdiary, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+#Plot
+boxplot (durdiary$durg1, durdiary$durg2, durdiary$durd, col=terrain.colors(3), at=c(1,2,3), names = c("GENEActiv 1", "GENEActiv 2", "Diary"))
+title (main = "Time in Bed", ylab = "Time (mins)", xlab = "Tracking Method", font.lab = 2)
+
+plot(dur$durg1, dur$durg2, xlab= "GENEActiv 1 (mins)", ylab = "GENEActiv 2 (mins)", main= "Time in Bed")
+```
+##### Time in bed (dur) has an **ICC2 of 0.90** indicating **good-excellent reliability** between actigraphs where sleep assessment data on time spent in bed is  corrolated between GENEActiv Devices.
+##### Time in bed (dur) has an **ICC2 of 0.89** indicating **good reliability** between actigraphs and sleep diary where sleep assessment data on time spent in bed is corrolated between GENEActiv Devices and sleep diary.
+
+### Percent Sleep (pslp)
+#### PSLP = (Sleep Minutes / Duration in Bed) x 100
+```{r}
+# Select Columns of Data Table
+library(dplyr)
+pslp <- select(GSLEEP, pslpg1, pslpg2)
+
+# Intraclass Correlation Coefficient
+library(psych)
+ICC(pslp, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (pslp$pslpg1, pslp$pslpg2, col=terrain.colors(2), at=c(1,2), names = c("GENEActiv 1", "GENEActiv 2"))
+title (main = "Percent Sleep", ylab = "Sleep in Minutes/ Duration in Bed * 100", xlab = "Tracking Method", font.lab = 2)
+
+plot(pslp$pslpg1, pslp$pslpg2, xlab= "GENEActiv 1 (percent)", ylab = "GENEActiv 2 (percent)", main= "Percent Sleep")
+```
+##### Percent Sleep (pslp) has an **ICC2 of 0** indicating **no reliability** between actigraphs where sleep assessment data on percent sleep is NOT corrolated between GENEActiv Devices within the current dataset.
+
+### Sleep Minutes (smin)
+```{r}
+# Select Columns of Data Table
+library(dplyr)
+smin <- select(GSLEEP, sming1, sming2)
+smindiary <- select(GSLEEP, sming1, sming2, smind)
+
+# Intraclass Correlation Coefficient
+library(psych)
+ICC(smin, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(smindiary, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (smindiary$sming1, smindiary$sming2, smindiary$smind, col=terrain.colors(3), at=c(1,2,3), names = c("GENEActiv 1", "GENEActiv 2", "Diary"))
+title(main = "Total Sleep Minutes", ylab = "Time (mins)", xlab = "Tracking Method", font.lab = 2)
+
+plot(smin$sming1, smin$sming2, xlab= "GENEActiv 1 (mins)", ylab = "GENEActiv 2 (mins)", main= "Total Sleep Minutes")
+```
+##### Sleep minutes (smin) has an **ICC2 of 0.72** indicating **moderate reliability** between actigraphs where sleep assessment data on sleep minutes is corrolated between GENEActiv Devices.
+##### Sleep minutes (smin) has an **ICC2 of 0.70** indicating **moderate reliability** between actigraphs and sleep diary where sleep assessment data on sleep minutes is corrolated between GENEActiv Devices and sleep diary.
+
+### Wake Minutes (wmin)
+```{r}
+# Select Columns of Data Table
+library(dplyr)
+wmin <- select(GSLEEP, wming1, wming2)
+wmindiary <- select(GSLEEP, wming1, wming2, wmind)
+
+# Intraclass Correlation Coefficient
+library(psych)
+ICC(wmin, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(wmindiary, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (wmin$wming1, wmin$wming2, wmindiary$wmind, col=terrain.colors(3), at=c(1,2,3), names = c("GENEActiv 1", "GENEActiv 2","Diary"))
+title(main = "Wake Minutes", ylab = "Time (mins)", xlab = "Tracking Method", font.lab = 2)
+
+plot(wmin$wming1, wmin$wming2, xlab= "GENEActiv 1 (mins)", ylab = "GENEActiv 2 (mins)", main= "Wake Minutes")
+```
+##### Wake minutes (wmin) has an **ICC2 of 0** indicating **no reliability** between actigraphs where sleep assessment data on total wake minutes in bed is NOT corrolated between GENEActiv Devices within the current data set.
+##### Wake minutes (wmin) has an **ICC2 of 0** indicating **no reliability** between actigraphs and sleep diary where sleep assessment data on total wake minutes in bed is NOT corrolated between GENEActiv Devices and sleep diary within the current data set.
+
+### Wake-up time (etime)
+#### Adjusted to 2pm = 0:00 in minutes since 2pm
+```{r}
+# Select Columns of Data Table
+library(dplyr)
+etime <- select(GSLEEP, etimeg1, etimeg2)
+
+#Adjust time & create data frame with time in minutes since 2pm
+library("lubridate")
+etime<- c(etime$etimeg1, etime$etimeg2)
+
+library(lubridate)
+res <- hms(etime)       
+time <- hour(res)*60 + minute(res) + 600 
+
+time
+
+etime.df <- data.frame(matrix(time, nrow=7, ncol=2))
+colnames(etime.df) <- c("etimeg1a", "etimeg2a")
+etime.df
+
+etime.df %>%
+  mutate_all(funs(ifelse(.>1439, .-1440, .)))
+
+#Calculate Intraclass Correlation
+library(psych)
+ICC(etime.df, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Repeat with Diary
+# Select Columns of Data Table
+library(dplyr)
+etimediary <- select(GSLEEP, etimeg1, etimeg2, etimed)
+
+#Adjust time & create data frame with time in minutes since 2pm
+library("lubridate")
+etimediary<- c(etimediary$etimeg1, etimediary$etimeg2, etimediary$etimed)
+
+library(lubridate)
+res <- hms(etimediary)       
+time <- hour(res)*60 + minute(res) + 600 
+
+time
+
+etimediary.df <- data.frame(matrix(time, nrow=7, ncol=3))
+colnames(etimediary.df) <- c("etimeg1a", "etimeg2a", "etimeda")
+etimediary.df
+
+etimediary.df %>%
+  mutate_all(funs(ifelse(.>1439, .-1440, .)))
+
+#Calculate Intraclass Correlation
+library(psych)
+ICC(etimediary.df, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (etime.df$etimeg1a, etime.df$etimeg2a, etimediary.df$etimeda, col=terrain.colors(3), at=c(1,2,3), names = c("GENEActiv 1", "GENEActiv 2", "Diary"))
+title(main = "Wake-up Time", ylab = "Time (mins after 2pm)", xlab = "Tracking Method", font.lab = 2)
+
+plot(etime.df$etimeg1, etime.df$etimeg2, xlab= "GENEActiv 1 (mins since 2pm)", ylab = "GENEActiv 2 (mins since 2pm)", main= "Wake-up Time")
+
+```
+##### Wake-up Time (etime) has an **ICC2 of 0.86** indicating **good reliability** between actigraphs where sleep assessment data on wake-up time is corrolated between GENEActiv Devices.
+##### Wake-up Time (etime) has an **ICC2 of 0.79** indicating **good reliability** between actigraphs and sleep diary where sleep assessment data on wake-up Ttme is corrolated between GENEActiv Devices and sleep diary.
+
+### Sleep Time (stime)
+#### Adjusted to 2pm = 0:00 in mins since 2pm
+```{r}
+# Select Columns of Data Table
+library(dplyr)
+stime <- select(GSLEEP, stimeg1, stimeg2)
+
+#Adjust time & create data frame with time in minutes since 2pm
+library("lubridate")
+stime<- c(stime$stimeg1, stime$stimeg2)
+
+library(lubridate)
+res <- hms(stime)       
+time <- hour(res)*60 + minute(res) + 600 
+
+time
+
+stime.df <- data.frame(matrix(time, nrow=7, ncol=2))
+colnames(stime.df) <- c("stimeg1a", "stimeg2a")
+stime.df
+
+stime.df %>%
+  mutate_all(funs(ifelse(.>1439, .-1440, .)))
+
+#Calculate Intraclass Correlation
+library(psych)
+ICC(stime.df, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Repeat with Diary
+# Select Columns of Data Table
+library(dplyr)
+stimediary <- select(GSLEEP, stimeg1, stimeg2, stimed)
+
+#Adjust time & create data frame with time in minutes since 2pm
+library("lubridate")
+stimediary<- c(stimediary$stimeg1, stimediary$stimeg2, stimediary$stimed)
+
+library(lubridate)
+res <- hms(stimediary)       
+time <- hour(res)*60 + minute(res) + 600 
+
+time
+
+stimediary.df <- data.frame(matrix(time, nrow=7, ncol=3))
+colnames(stimediary.df) <- c("stimeg1a", "stimeg2a","stimeda")
+stimediary.df
+
+stimediary.df %>%
+  mutate_all(funs(ifelse(.>1439, .-1440, .)))
+
+#Calculate Intraclass Correlation
+library(psych)
+ICC(stimediary.df, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (stime.df$stimeg1a, stime.df$stimeg2a, stimediary.df$stimeda, col=terrain.colors(3), at=c(1,2,3), names = c("GENEActiv 1", "GENEActiv 2", "Diary"))
+title(main = "Sleep Time", ylab = "Time (mins after 2pm)", xlab = "Tracking Method", font.lab = 2)
+
+plot(stime.df$stimeg1, stime.df$stimeg2, xlab= "GENEActiv 1 (mins since 2pm)", ylab = "GENEActiv 2 (mins since 2pm)", main= "Sleep Time")
+```
+##### Sleep Time (stime) has an **ICC2 of 0.70** indicating **moderate reliability** between actigraphs where sleep assessment data on sleep time is corrolated between GENEActiv Devices.
+##### Sleep Time (stime) has an **ICC2 of 0.51** indicating **moderate reliability** between actigraphs and sleep diary where sleep assessment data on sleep time is corrolated between GENEActiv Devices and sleep diary.
+
+
+
+
+## Motionlogger data {.tabset}
+
+### Load Data
+```{r}
+# set current working directory
+setwd("~/Desktop/sleepdata")
+
+# import data for total time in bed
+library(readr)
+MSLEEP <- read_csv("MSLEEP.csv")
+
+# View(MSLEEP)
+MSLEEP
+```
+
+### Time in Bed (dur)
+```{r}
+#Select Columns of Data Table
+library(dplyr)
+dur <- select(MSLEEP, durm1, durm2)
+durdiary <- select(MSLEEP, durm1, durm2, durd)
+
+#Intraclass Correlation Coefficient
+library(psych)
+ICC(dur, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(durdiary, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+#Plot
+boxplot (dur$durm1, dur$durm2, durdiary$durd, col=terrain.colors(3), at=c(1,2,3), names = c("Motionlogger 1", "Motionlogger 2", "Diary"))
+title(ylab = "Time in Bed (mins)", xlab = "Tracking Method", font.lab = 2)
+
+plot(dur$durm1, dur$durm2, xlab= "Motionlogger 1 (mins)", ylab = "Motionlogger 2 (mins)", main= "Time in Bed")
+```
+##### Time in bed (duration) has an **ICC2 of 0.999** indicating **excellent** reliability between actigraphs where sleep assessment data on time spent in bed is corrolated between Motionlogger Devices.
+##### Time in bed (duration) has an **ICC2 of 0.298** indicating **poor** reliability between actigraphs and sleep diary where sleep assessment data on time spent in bed is NOT corrolated between Motionlogger Devices and sleep diary.
+
+### Percent Sleep (pslp)
+```{r}
+# Select Columns of Data Table
+pslp <- select(MSLEEP, pslpm1, pslpm2)
+
+# Intraclass Correlation Coefficient
+library(psych)
+ICC(pslp, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+# Plot
+boxplot (pslp$pslpm1, pslp$pslpm2, col=terrain.colors(2), at=c(1,2), names = c("Motionlogger 1", "Motionlogger 2"))
+title(ylab = "Percent Sleep", xlab = "Tracking Method", font.lab = 2)
+
+plot(pslp$pslpm1, pslp$pslpm2, xlab= "Motionlogger 1 (percent)", ylab = "Motionlogger 2 (percent)", main= "Percent Sleep")
+
+```
+##### Percent Sleep (pslp) has an **ICC2 of 0.985** indicating **excellent** reliability between actigraphs where sleep assessment data on percent sleep is corrolated between Motionlogger Devices.
+
+### Sleep Minutes (smin)
+```{r}
+# Select Columns of Data Table
+library(dplyr)
+smin <- select(MSLEEP, sminm1, sminm2)
+smindiary <- select(MSLEEP, sminm1, sminm2, smind)
+
+# Intraclass Correlation Coefficient
+library(psych)
+ICC(smin, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(smindiary, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (smindiary$sminm1, smindiary$sminm2, smindiary$smind, col=terrain.colors(3), at=c(1,2,3), names = c("Motionlogger 1", "Motionlogger 2", "Diary"))
+title(main = "Total Sleep Minutes", ylab = "Time (mins)", xlab = "Tracking Method", font.lab = 2)
+
+plot(smin$sminm1, smin$sminm2, xlab= "Motionlogger 1 (mins)", ylab = "Motionlogger 2 (mins)", main= "Total Sleep Minutes")
+```
+##### Total Minutes of Sleep (smin) has an **ICC2 of 0.999** indicating **excellent** reliability between actigraphs where sleep assessment data on sleep minutes is corrolated between Motionlogger Devices.
+##### Total Minutes of Sleep (smin) has an **ICC2 of 0.326** indicating **poor** reliability between actigraphs and sleep diary where sleep assessment data on sleep minutes is NOT corrolated between Motionlogger Devices and sleep diary.
+
+### Wake Minutes (wmin)
+```{r}
+# Select Columns of Data Table
+library(dplyr)
+wmin <- select(MSLEEP, wminm1, wminm2)
+wmindiary <- select(MSLEEP, wminm1, wminm2, wmind)
+
+# Intraclass Correlation Coefficient
+library(psych)
+ICC(wmin, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(wmindiary, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (wmin$wminm1, wmin$wminm2, wmindiary$wmind, col=terrain.colors(3), at=c(1,2,3), names = c("Motionlogger 1", "Motionlogger 2","Diary"))
+title(main = "Wake Minutes", ylab = "Time (mins)", xlab = "Tracking Method", font.lab = 2)
+
+plot(wmin$wminm1, wmin$wminm2, xlab= "Motionlogger 1 (mins)", ylab = "Motionlogger 2 (mins)", main= "Wake Minutes")
+```
+##### Total Minutes of Wake has an **ICC2 of 0.984** indicating **excellent** reliability between actigraphs where sleep assessment data on total wake minutes in bed is corrolated between Motionlogger Devices
+##### Total Minutes of Wake has an **ICC2 of 1.5*10^-4** indicating **poor** reliability between actigraphs and sleep diary where sleep assessment data on total wake minutes in bed is corrolated between Motionlogger Devices
+
+### Wake After Sleep Onset (waso)
+```{r}
+library(dplyr)
+waso <- select(MSLEEP, wasom1, wasom2)
+
+# Intraclass Correlation Coefficient
+library(psych)
+
+ICC(waso, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (waso$wasom1, waso$wasom2, col=terrain.colors(2), at=c(1,2), names = c("Motionlogger 1", "Motionlogger 2"))
+title(ylab = "Wake after sleep onset (mins)", xlab = "Tracking Method", font.lab = 2)
+
+plot(waso$wasom1, waso$wasom2, xlab= "Motionlogger 1 (mins)", ylab = "Motionlogger 2 (mins)", main= "Wake After Sleep Onset")
+```
+##### Wake after sleep onset (waso) has an **ICC2 of 0.868** indicating **good** reliability between actigraphs where sleep assessment data on wake after sleep onset is corrolated between Motionlogger Devices
+
+### Wake-up Time (etime)
+#### Adjusted to 2pm = 0:00 in mins since 2pm
+```{r}
+# Select Columns of Data Table
+library(dplyr)
+etime <- select(MSLEEP, etimem1, etimem2)
+
+#Adjust time & create data frame with time in minutes since 2pm
+library("lubridate")
+etime<- c(etime$etimem1, etime$etimem2)
+
+library(lubridate)
+res <- hms(etime)       
+time <- hour(res)*60 + minute(res) + 600 
+
+time
+
+etime.df <- data.frame(matrix(time, nrow=7, ncol=2))
+colnames(etime.df) <- c("etimem1a", "etimem2a")
+etime.df
+
+etime.df %>%
+  mutate_all(funs(ifelse(.>1439, .-1440, .)))
+
+#Calculate Intraclass Correlation
+library(psych)
+ICC(etime.df, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Repeat with Diary
+# Select Columns of Data Table
+library(dplyr)
+etimediary <- select(MSLEEP, etimem1, etimem2, etimed)
+
+#Adjust time & create data frame with time in minutes since 2pm
+library("lubridate")
+etimediary<- c(etimediary$etimem1, etimediary$etimem2, etimediary$etimed)
+
+library(lubridate)
+res <- hms(etimediary)       
+time <- hour(res)*60 + minute(res) + 600 
+
+time
+
+etimediary.df <- data.frame(matrix(time, nrow=7, ncol=3))
+colnames(etimediary.df) <- c("etimem1a", "etimem2a", "etimeda")
+etimediary.df
+
+etimediary.df %>%
+  mutate_all(funs(ifelse(.>1439, .-1440, .)))
+
+#Calculate Intraclass Correlation
+library(psych)
+ICC(etimediary.df, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (etime.df$etimem1a, etime.df$etimem2a, etimediary.df$etimeda, col=terrain.colors(3), at=c(1,2,3), names = c("Motionlogger 1", "Motionlogger 2", "Diary"))
+title(main = "Wake-up Time", ylab = "Time (mins after 2pm)", xlab = "Tracking Method", font.lab = 2)
+
+plot(etime.df$etimem1, etime.df$etimem2, xlab= "Motionlogger 1 (mins since 2pm)", ylab = "Motionlogger 2 (mins since 2pm)", main= "Wake-up Time")
+```
+##### Wake up time (etime) has an **ICC2 of 0.999** indicating **excellent** reliability between actigraphs where sleep assessment data on wake-up time is corrolated between Motionlogger Devices.
+##### Wake up time (etime) has an **ICC2 of 0.872** indicating **good** reliability between actigraphs and sleep diary where sleep assessment data on wake-up time is corrolated between Motionlogger Devices and sleep diary.
+
+### Sleep Time (stime)
+#### Adjusted to 2pm = 0:00 in mins since 2pm
+```{r}
+# Select Columns of Data Table
+library(dplyr)
+stime <- select(MSLEEP, stimem1, stimem2)
+
+#Adjust time & create data frame with time in minutes since 2pm
+library("lubridate")
+stime<- c(stime$stimem1, stime$stimem2)
+
+library(lubridate)
+res <- hms(stime)       
+time <- hour(res)*60 + minute(res) + 600 
+
+time
+
+stime.df <- data.frame(matrix(time, nrow=7, ncol=2))
+colnames(stime.df) <- c("stimem1a", "stimem2a")
+stime.df
+
+stime.df %>%
+  mutate_all(funs(ifelse(.>1439, .-1440, .)))
+
+#Calculate Intraclass Correlation
+library(psych)
+ICC(stime.df, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Repeat with Diary
+# Select Columns of Data Table
+library(dplyr)
+stimediary <- select(MSLEEP, stimem1, stimem2, stimed)
+
+#Adjust time & create data frame with time in minutes since 2pm
+library("lubridate")
+stimediary<- c(stimediary$stimem1, stimediary$stimem2, stimediary$stimed)
+
+library(lubridate)
+res <- hms(stimediary)       
+time <- hour(res)*60 + minute(res) + 600 
+
+time
+
+stimediary.df <- data.frame(matrix(time, nrow=7, ncol=3))
+colnames(stimediary.df) <- c("stimem1a", "stimem2a","stimeda")
+stimediary.df
+
+stimediary.df %>%
+  mutate_all(funs(ifelse(.>1439, .-1440, .)))
+
+#Calculate Intraclass Correlation
+library(psych)
+ICC(stimediary.df, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (stime.df$stimem1a, stime.df$stimem2a, stimediary.df$stimeda, col=terrain.colors(3), at=c(1,2,3), names = c("Motionlogger 1", "Motionlogger 2", "Diary"))
+title(main = "Sleep Time", ylab = "Time (mins after 2pm)", xlab = "Tracking Method", font.lab = 2)
+
+plot(stime.df$stimem1, stime.df$stimem2, xlab= "Motionlogger 1 (mins since 2pm)", ylab = "Motionlogger 2 (mins since 2pm)", main= "Sleep Time")
+```
+##### Sleep Time (stime) has an **ICC2 of 1** indicating **complete reliability** between actigraphs where sleep assessment data on sleep time is perfectly corrolated between Motionlogger Devices.
+##### Sleep Time (stime) has an **ICC2 of 0.30** indicating **poor reliability** between actigraphs and sleep diary where sleep assessment data on sleep time is NOT corrolated between Motionlogger Devices and sleep diary.
+
+
+
+## Motionlogger vs GENEActive data {.tabset}
+
+### Time in Bed (dur)
+```{r}
+# set current working directory
+setwd("~/Desktop/sleepdata")
+
+# import data for total time in bed
+library(readr)
+dur <- read_csv("TinBed.csv")
+
+# View(dur)
+dur
+
+library(psych)
+ICC(dur, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+library(dplyr)
+dur_mg <- select(dur, durg, durm)
+dur_dm <- select(dur, durd, durm)
+dur_dg <- select(dur, durd, durg)
+
+ICC(dur_mg, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(dur_dm, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(dur_dg, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (dur$durd, dur$durm, dur$durg, col=terrain.colors(3), at=c(1,2,3), names = c("Diary", "Motionlogger", "GENEActiv"))
+title(ylab = "Time in Bed (mins)", xlab = "Tracking Method", font.lab = 2)
+```
+##### Time in bed has an **ICC2 of 0.45** indicating **poor reliability** between actigraphs and sleep diary where sleep assessment data on time spent in bed is NOT corrolated between all 3 measures
+##### Time in bed has an **ICC2 of 0.75** indicating **moderate-good reliability** between the 2 actigraphs where sleep assessment data on time spent in bed is corrolated between devices
+##### Time in bed has an **ICC2 of 0.26** indicating **poor reliability** between Motionlogger actigraph and sleep diary where sleep assessment data on time spent in bed is NOT corrolated between measures
+##### Time in bed has an **ICC2 of 0.29** indicating **poor reliability** between GENEActiv actigraph and sleep diary where sleep assessment data on time spent in bed is NOT corrolated between measures
+
+
+### Percent Sleep (pslp) 
+#### PSLP = (Sleep Minutes / Duration in Bed) x 100
+
+```{r}
+# Set current working directory
+setwd("~/Desktop/sleepdata")
+
+# Import data and perform analysis
+library(readr)
+pslp<- read_csv("PSLP.csv")
+
+pslp
+
+library(psych)
+ICC(pslp, missing = FALSE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+library(dplyr)
+pslp_mg <- select(pslp, pslpg, pslpm)
+pslp_dm <- select(pslp, pslpd, pslpm)
+pslp_dg <- select(pslp, pslpd, pslpg)
+
+ICC(pslp_mg, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(pslp_dm, missing = FALSE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(pslp_dg, missing = FALSE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (pslp$pslpd, pslp$pslpm, pslp$pslpg, col=terrain.colors(3), at=c(1,2,3), names = c("Diary", "Motionlogger", "GENEActiv"))
+title(ylab = "Percent Sleep (%)", xlab = "Tracking Method", font.lab = 2)
+```
+##### Percent sleep has an **ICC2 of 0.10** indicating **poor reliability** between actigraphs and sleep diary where sleep assessment data on percent sleep is NOT corrolated between all 3 measures
+##### Percent sleep has an **ICC2 of 0.033** indicating **poor reliability** between the 2 actigraphs where sleep assessment data on percent sleep is NOT corrolated between devices
+##### Percent sleep has an **ICC2 of 0.053** indicating **poor reliability** between Motionlogger actigraph and sleep diary where sleep assessment data on percent sleep is NOT corrolated between devices
+##### Percent sleep has an **ICC2 of 0.18** indicating **poor reliability** between GENEActiv actigraph and sleep diary where sleep assessment data on percent sleep is NOT corrolated between devices
+
+### Sleep time (smin)
+
+```{r}
+# set current working directory
+setwd("~/Desktop/sleepdata")
+
+#Minutes asleep in bed
+library(readr)
+smin <- read_csv("SMIN.csv")
+smin
+
+library(psych)
+ICC(smin, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+library(dplyr)
+smin_mg <- select(smin, sming, sminm)
+smin_dm <- select(smin, smind, sminm)
+smin_dg <- select(smin, smind, sming)
+
+ICC(smin_mg, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(smin_dm, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(smin_dg, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (smin$smind, smin$sminm, smin$sming, col=terrain.colors(3), at=c(1,2,3), names = c("Diary", "Motionlogger", "GENEActiv"))
+title(ylab = "Total Sleep Time (mins)", xlab = "Tracking Method", font.lab = 2)
+```
+##### Sleep minutes has an **ICC2 of 0.089** indicating **poor reliability** between actigraphs and sleep diary where sleep assessment data on sleep minutes is NOT corrolated between all 3 measures
+##### Sleep minutes has an **ICC2 of 0.238** indicating **poor reliability** between the 2 actigraphs where sleep assessment data on sleep minutes is NOT corrolated between devices
+##### Sleep minutes has an **ICC2 of 0.027** indicating **poor reliability** between Motionlogger actigraph and sleep diary where sleep assessment data on sleep minutes is NOT corrolated between devices
+##### Sleep minutes has an **ICC2 of 2.1*10^-10** indicating **poor reliability** between GENEActiv actigraph and sleep diary where sleep assessment data on sleep minutes is NOT corrolated between devices
+
+
+### Wake time (mins)
+
+```{r}
+# set current working directory
+setwd("~/Desktop/sleepdata")
+
+#minutes awake in bed
+library(readr)
+wmin <- read_csv("WMIN.csv")
+wmin
+
+library(psych)
+ICC(wmin, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+library(dplyr)
+wmin_mg <- select(wmin, wming, wminm)
+wmin_dm <- select(wmin, wmind, wminm)
+wmin_dg <- select(wmin, wmind, wming)
+
+ICC(wmin_mg, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(wmin_dm, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(wmin_dg, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+#Plot
+boxplot (wmin$wmind, wmin$wminm, wmin$wming, col=terrain.colors(3), at=c(1,2,3), names = c("Diary", "Motionlogger", "GENEActiv"))
+title(ylab = "Total Wake Time in Bed (mins)", xlab = "Tracking Method", font.lab = 2)
+```
+##### Wake minutes has an **ICC2 of 0.23** indicating **poor reliability** between actigraphs and sleep diary where sleep assessment data on wake minutes is NOT corrolated between all 3 measures
+##### Wake minutes has an **ICC2 of 0.027** indicating **poor reliability** between the 2 actigraphs where sleep assessment data on wake mintues is NOT corrolated between devices.
+##### Wake minutes has an **ICC2 of 0.11** indicating **poor reliability** between Motionlogger actigraph and sleep diary where sleep assessment data on wake minutes is NOT corrolated between devices
+##### Wake minutes has an **ICC2 of 0.46** indicating **poor reliability** between GENEActiv actigraph and sleep diary where sleep assessment data on wake minutes is NOT corrolated between devices
+
+### Sleep Time
+```{r}
+# set current working directory
+setwd("~/Desktop/sleepdata")
+
+library(readr)
+adjbtime <- read_csv("adjbtime.csv")
+
+library("lubridate")
+mbtime<- c(adjbtime$adjbtimed, adjbtime$adjbtimem, adjbtime$adjbtimeg)
+
+library(lubridate)
+res <- hms(mbtime)       
+hour(res)*60 + minute(res)       
+
+mbtimed <- c(630, 660, 700,  NA, 555, 520, 733, 510, 540, 630, 630, NA, 630, 780)
+mbtimem <- c(525, 631, 648, 558, 537, 542, 727, 519, 541, 627, 638, 645, 634, 787)
+mbtimeg <- c(544, 664, 658, 557, 546, 547, 725, 522, 544, 626, 638, 644, 636, 787)
+
+mbtime <- data.frame(mbtimed, mbtimem, mbtimeg)
+mbtime
+   
+```
+
+```{r}
+#Bedtime adjusted to 2pm = 0:00 in mins since 2pm
+library(psych)
+ICC(mbtime, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+library(dplyr)
+mbtime_mg <- select(mbtime, mbtimeg, mbtimem)
+mbtime_dm <- select(mbtime, mbtimed, mbtimem)
+mbtime_dg <- select(mbtime, mbtimed, mbtimeg)
+
+ICC(mbtime_mg, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(mbtime_dm, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(mbtime_dg, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+boxplot (mbtime$mbtimed, mbtime$mbtimem, mbtime$mbtimeg, col=terrain.colors(3), at=c(1,2,3), names = c("Diary", "Motionlogger", "GENEActiv"))
+title(ylab = "Bedtime (mins after 2pm)", xlab = "Tracking Method", font.lab = 2)
+```
+##### Sleep time has an **ICC2 of 0.94** indicating **excellent reliability** between actigraphs and sleep diary where sleep assessment data on sleep time is corrolated between all 3 measures
+##### Sleep time has an **ICC2 of 0.99** indicating **excellent reliability** between the 2 actigraphs where sleep assessment data on sleep time is corrolated between devices.
+##### Sleep time has an **ICC2 of 0.90** indicating **excellent reliability** between Motionlogger actigraph and sleep diary where sleep assessment data on sleep time is  corrolated between devices
+##### Sleep time has an **ICC2 of 0.93** indicating **excellent reliability** between GENEActiv actigraph and sleep diary where sleep assessment data on sleep time is corrolated between devices
+
+### Wake-up time
+```{r}
+# set current working directory
+setwd("~/Desktop/sleepdata")
+
+library(readr)
+adjwtime <- read_csv("adjwtime.csv")
+
+library("lubridate")
+mwtime<- c(adjwtime$adjwtimed, adjwtime$adjwtimem, adjwtime$adjwtimeg)
+
+library(lubridate)
+res <- hms(mwtime)       
+hour(res)*60 + minute(res)       
+
+mwtimed <- c(1020, 1050, 1100, NA, 990, 960, 1080, 1020,  990, 1050, 1035, 1110, 1065, 1065)
+mwtimem <- c(1019, 1113, 1145, 990, 990, 957, 1077, 986, 990, 1050, 1038, 1110, 1065, 1067)
+mwtimeg <- c(1057, 1113, 1102, 992, 990, 957, 1106, 982, 991, 1040, 1038, 1075, 1072, 1131)
+
+mwtime <- data.frame(mwtimed, mwtimem, mwtimeg)
+mwtime
+
+```
+
+#### Wake up time adjusted to 2pm = 0:00 in mins since 2pm
+
+```{r}
+#Wake up time adjusted to 2pm = 0:00
+library(psych)
+ICC(mwtime, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+library(dplyr)
+mwtime_mg <- select(mwtime, mwtimeg, mwtimem)
+mwtime_dm <- select(mwtime, mwtimed, mwtimem)
+mwtime_dg <- select(mwtime, mwtimed, mwtimeg)
+
+ICC(mwtime_mg, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(mwtime_dm, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+ICC(mwtime_dg, missing = TRUE, alpha = 0.05, lmer = TRUE, check.keys = FALSE )
+
+boxplot (mwtime$mwtimed, mwtime$mwtimem, mwtime$mwtimeg, col=terrain.colors(3), at=c(1,2,3), names = c("Diary", "Motionlogger", "GENEActiv"))
+title(ylab = "Waketime (mins after 2pm)", xlab = "Tracking Method", font.lab = 2)
+```
+##### Wake-up time has an **ICC2 of 0.86** indicating **good reliability** between actigraphs and sleep diary where sleep assessment data on wake-up time is corrolated between all 3 measures
+##### Wake-up time has an **ICC2 of 0.89** indicating **good reliability** between the 2 actigraphs where sleep assessment data on wake-up time is  corrolated between devices.
+##### Wake-up time has an **ICC2 of 0.89** indicating **good reliability** between Motionlogger actigraph and sleep diary where sleep assessment data on wake-up time is  corrolated between devices
+##### Wake-up time has an **ICC2 of 0.80** indicating **good reliability** between GENEActiv actigraph and sleep diary where sleep assessment data on wake-up time is corrolated between devices
