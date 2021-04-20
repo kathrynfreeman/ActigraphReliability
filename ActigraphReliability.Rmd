@@ -47,12 +47,11 @@ Model ICC(2) appears most applicable to the sleep data set
 
 ### Load Data
 ```{r}
-#Set current working directory
-setwd("~/Desktop/sleepdata")
+library(here)
 
 #Import data for total time in bed
 library(readr)
-GSLEEP <- read_csv("GSLEEP.csv")
+GSLEEP <- read_csv(here("data", "GSLEEP.csv"))
 
 #View(GSLEEP)
 GSLEEP
